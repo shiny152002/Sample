@@ -1,0 +1,41 @@
+/* App.module.css */
+.appContainer {
+  background-color: #1c1c1c;
+  color: white;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #00d4ff;
+}
+
+.mapContainer {
+  width: 90vw;
+  height: 85vh;
+  border: 5px solid #00d4ff;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+}
+
+@media (max-width: 768px) {
+  .mapContainer {
+    width: 95vw;
+    height: 75vh;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+}
