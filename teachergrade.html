@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher Grades Management</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: rgba(78, 84, 200, 0.9);
+            color: white;
+            padding: 20px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+            z-index: 10;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            flex-grow: 1;
+        }
+
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background: rgba(143, 148, 251, 0.6);
+            box-shadow: 0 0 15px rgba(143, 148, 251, 0.9);
+        }
+
+        .main-content {
+            margin-left: 270px;
+            padding: 30px;
+            flex: 1;
+            overflow-y: auto;
+            width: calc(100% - 270px);
+        }
+
+        section {
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-row>div {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #4e54c8;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        button {
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: linear-gradient(to right, #8f94fb, #4e54c8);
+            box-shadow: 0 6px 12px rgba(78, 84, 200, 0.3);
+        }
+
+        .course-button {
+            padding: 8px 15px;
+            background: rgba(143, 148, 251, 0.3);
+            color: #4e54c8;
+            border-radius: 8px;
+        }
+
+        .course-button:hover {
+            background: #4e54c8;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>Teacher Dashboard</h2>
+        <ul>
+            <li><a href="#management" class="active">Grades Management</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <section>
+            <h2>Manage Student Grades</h2>
+            <div class="form-row">
+                <div><input type="text" id="gradeStudentName" placeholder="Student Name" required></div>
+                <div><input type="number" id="gradeStudentId" placeholder="Student ID" min="0" required></div>
+                <div><input type="text" id="courseName" placeholder="Course Name" required></div>
+                <div><input type="number" id="studentMark" placeholder="Student Mark" required></div>
+                <div><input type="number" id="fullMark" placeholder="Full Mark" required></div>
+            </div>
+            <div class="form-row">
+                <button onclick="saveGrade()">Save Grade</button>
+            </div>
+
+            <h3>Filter by Subject</h3>
+            <select id="subjectFilter" onchange="filterBySubject()">
+                <option value="All">All Subjects</option>
+                <option value="Science">Science</option>
+                <option value="English Language">English Language</option>
+                <option value="Arabic Language">Arabic Language</option>
+                <option value="Maths">Maths</option>
+                <option value="History">History</option>
+                <option value="Geography">Geography</option>
+                <option value="Physics">Physics</option>
+                <option value="Chemistry">Chemistry</option>
+                <option value="Biology">Biology</option>
+                <option value="Arts">Arts</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+                <option value="Algebra">Algebra</option>
+                <option value="Geometry">Geometry</option>
+                <option value="Calculus">Calculus</option>
+                <option value="Economics">Economics</option>
+                <option value="Christian Religion">Christian Religion</option>
+                <option value="Islamic Religion">Islamic Religion</option>
+                <option value="Music">Music</option>
+                <option value="Philosophy">Philosophy</option>
+            </select>
+
+            <h3>Grades Records</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Student ID</th>
+                        <th>Course</th>
+                        <th>Student Mark</th>
+                        <th>Full Mark</th>
+                        <th>Grade</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="gradesTableBody"></tbody>
+            </table>
+        </section>
+    </div>
+
+    <script>
+        const GRADE_STORAGE_KEY = 'schoolGradeSystem_v2';
+
+        function calculateGrade(studentMark, fullMark) {
+            const percentage = (studentMark / fullMark) * 100;
+            if (percentage >= 90) return 'A';
+            if (percentage >= 80) return 'B';
+            if (percentage >= 70) return 'C';
+            if (percentage >= 60) return 'D';
+            return 'F';
+        }
+
+        function saveGrade() {
+            const studentName = document.getElementById('gradeStudentName').value;
+            const studentId = document.getElementById('gradeStudentId').value;
+            const course = document.getElementById('courseName').value;
+            const studentMark = parseFloat(document.getElementById('studentMark').value);
+            const fullMark = parseFloat(document.getElementById('fullMark').value);
+
+            if (!studentName || !studentId || !course || isNaN(studentMark) || isNaN(fullMark)) {
+                alert('Please fill all fields with valid values');
+                return;
+            }
+
+            const grade = calculateGrade(studentMark, fullMark);
+            const percentage = ((studentMark / fullMark) * 100).toFixed(2);
+
+            let gradeSystem = JSON.parse(localStorage.getItem(GRADE_STORAGE_KEY)) || {
+                teacherView: {},
+                studentView: {}
+            };
+
+            const record = {
+                name: studentName,
+                course: course,
+                studentMark: studentMark,
+                fullMark: fullMark,
+                grade: grade,
+                date: new Date().toISOString()
+            };
+
+            if (!gradeSystem.teacherView[studentId]) gradeSystem.teacherView[studentId] = [];
+            gradeSystem.teacherView[studentId].push(record);
+
+            if (!gradeSystem.studentView[studentId]) gradeSystem.studentView[studentId] = [];
+            gradeSystem.studentView[studentId].push({
+                course, studentMark, fullMark, grade, percentage, date: new Date().toISOString()
+            });
+
+            localStorage.setItem(GRADE_STORAGE_KEY, JSON.stringify(gradeSystem));
+
+            renderTable();
+            document.getElementById('gradeStudentName').value = '';
+            document.getElementById('gradeStudentId').value = '';
+            document.getElementById('courseName').value = '';
+            document.getElementById('studentMark').value = '';
+            document.getElementById('fullMark').value = '';
+        }
+
+        function renderTable() {
+            const gradeSystem = JSON.parse(localStorage.getItem(GRADE_STORAGE_KEY)) || { teacherView: {} };
+            const tableBody = document.getElementById('gradesTableBody');
+            tableBody.innerHTML = '';
+
+            Object.entries(gradeSystem.teacherView).forEach(([studentId, records]) => {
+                records.forEach((record, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+            <td>${record.name}</td>
+            <td>${studentId}</td>
+            <td>${record.course}</td>
+            <td>${record.studentMark}</td>
+            <td>${record.fullMark}</td>
+            <td>${record.grade}</td>
+            <td>
+              <button onclick="editGrade('${studentId}', ${index})">Edit</button>
+              <button onclick="deleteGrade('${studentId}', ${index})">Delete</button>
+            </td>
+          `;
+                    tableBody.appendChild(row);
+                });
+            });
+        }
+
+        function filterBySubject() {
+            const selectedSubject = document.getElementById('subjectFilter').value;
+            const tableBody = document.getElementById('gradesTableBody');
+            const rows = tableBody.querySelectorAll('tr');
+
+            rows.forEach(row => {
+                const course = row.cells[2].textContent;
+                row.style.display = (selectedSubject === "All" || course === selectedSubject) ? "" : "none";
+            });
+        }
+
+        function deleteGrade(studentId, index) {
+            const gradeSystem = JSON.parse(localStorage.getItem(GRADE_STORAGE_KEY));
+            gradeSystem.teacherView[studentId].splice(index, 1);
+            if (gradeSystem.teacherView[studentId].length === 0) {
+                delete gradeSystem.teacherView[studentId];
+            }
+            localStorage.setItem(GRADE_STORAGE_KEY, JSON.stringify(gradeSystem));
+            renderTable();
+            filterBySubject(); // reapply filter
+        }
+
+        function editGrade(studentId, index) {
+            const gradeSystem = JSON.parse(localStorage.getItem(GRADE_STORAGE_KEY));
+            const record = gradeSystem.teacherView[studentId][index];
+
+            document.getElementById('gradeStudentName').value = record.name;
+            document.getElementById('gradeStudentId').value = studentId;
+            document.getElementById('courseName').value = record.course;
+            document.getElementById('studentMark').value = record.studentMark;
+            document.getElementById('fullMark').value = record.fullMark;
+
+            deleteGrade(studentId, index);
+        }
+
+        window.onload = renderTable;
+    </script>
+</body>
+
+</html>

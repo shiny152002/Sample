@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Grade Portal</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #4e54c8, #8f94fb);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 20px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+      padding: 30px 40px;
+      overflow-y: auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #4e54c8;
+    }
+
+    .student-info {
+      background: rgba(143, 148, 251, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 12px;
+    }
+
+    th {
+      background: #4e54c8;
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 16px;
+      border-radius: 12px 12px 0 0;
+    }
+
+    td {
+      background: #ffffff;
+      padding: 14px 16px;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      font-size: 15px;
+    }
+
+    tr:hover td {
+      background-color: #f0f4ff;
+      transition: background-color 0.3s ease;
+    }
+
+    .no-grades {
+      text-align: center;
+      color: #666;
+      padding: 30px;
+      font-style: italic;
+      background-color: #f9f9f9;
+      border-radius: 12px;
+    }
+
+    #toggleChatbot {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      background: #4e54c8;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 50px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #chatbot {
+      display: none;
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 280px;
+      padding: 15px;
+      animation: pulse 2s infinite;
+      transition: all 0.3s ease;
+      z-index: 9998;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(78, 84, 200, 0.7);
+      }
+
+      70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(78, 84, 200, 0);
+      }
+
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(78, 84, 200, 0);
+      }
+    }
+
+    #chatbot p {
+      margin-bottom: 10px;
+    }
+
+    #chatbot button {
+      margin: 5px 5px 0 0;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #4e54c8;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #chatbot button:hover {
+      background: #3036a2;
+    }
+
+    #chatResponse {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      th,
+      td {
+        font-size: 13px;
+        padding: 10px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Student Grade Portal</h1>
+    </div>
+
+    <div class="student-info">
+      <h2>Welcome, <span id="studentName"></span></h2>
+      <p>Student ID: <span id="studentId"></span></p>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Course</th>
+          <th>Student Mark</th>
+          <th>Full Mark</th>
+          <th>Grade</th>
+          <th>Percentage</th>
+        </tr>
+      </thead>
+      <tbody id="gradesTable">
+        <!-- Grades will load here -->
+      </tbody>
+    </table>
+  </div>
+
+  <button id="toggleChatbot">💬 Chat</button>
+
+  <div id="chatbot">
+    <strong>JessicaFomeya:</strong>
+    <p>How can I help you today?</p>
+    <button onclick="downloadPDF()">📄 PDF my document</button>
+    <button onclick="fakeEmail()">📧 Email the admin</button>
+    <button onclick="askAI()">🤖 Ask a question</button>
+    <div id="chatResponse"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const GRADE_DB = 'schoolGradeSystem_v2';
+      const STUDENT_DB = 'students';
+      const SESSION_KEY = 'loggedInUsername';
+
+      const user = localStorage.getItem(SESSION_KEY);
+      if (!user) {
+        window.location.href = 'login.html';
+      }
+
+      const students = JSON.parse(localStorage.getItem(STUDENT_DB)) || [];
+      const student = students.find(s => s.username === user);
+
+      if (!student) {
+        alert('Your student account is not properly registered');
+        localStorage.removeItem(SESSION_KEY);
+        window.location.href = 'register.html';
+      }
+
+      document.getElementById('studentName').textContent = student.name || student.username;
+      document.getElementById('studentId').textContent = student.studentId;
+
+      function loadGrades() {
+        const gradeSystem = JSON.parse(localStorage.getItem(GRADE_DB)) || {};
+        const gradesTable = document.getElementById('gradesTable');
+        const studentGrades = gradeSystem.studentView?.[student.studentId] || [];
+
+        if (studentGrades.length === 0) {
+          gradesTable.innerHTML = `
+            <tr>
+              <td colspan="5" class="no-grades">
+                No grades recorded yet. Check back later.
+              </td>
+            </tr>`;
+          return;
+        }
+
+        const sortedGrades = studentGrades.sort((a, b) => new Date(b.date) - new Date(a.date));
+        gradesTable.innerHTML = sortedGrades.map(grade => `
+          <tr>
+            <td>${grade.course}</td>
+            <td>${grade.studentMark}</td>
+            <td>${grade.fullMark}</td>
+            <td>${grade.grade}</td>
+            <td>${grade.percentage}%</td>
+          </tr>`).join('');
+      }
+
+      loadGrades();
+      const refreshInterval = setInterval(loadGrades, 15000);
+
+      window.addEventListener('error', (e) => {
+        console.error('Error:', e);
+        const gradesTable = document.getElementById('gradesTable');
+        gradesTable.innerHTML = `
+          <tr>
+            <td colspan="5" style="color: red; text-align: center;">
+              Error loading grades. Please contact your teacher.
+            </td>
+          </tr>`;
+      });
+
+      window.downloadPDF = function () {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFontSize(16);
+        doc.text("Student Grade Report", 20, 20);
+
+        const studentName = document.getElementById('studentName').textContent;
+        const studentId = document.getElementById('studentId').textContent;
+        doc.setFontSize(12);
+        doc.text(`Name: ${studentName}`, 20, 30);
+        doc.text(`Student ID: ${studentId}`, 20, 40);
+
+        const rows = [];
+        const gradeSystem = JSON.parse(localStorage.getItem(GRADE_DB)) || {};
+        const studentGrades = gradeSystem.studentView?.[student.studentId] || [];
+
+        studentGrades.forEach((grade) => {
+          rows.push([
+            grade.course,
+            grade.studentMark,
+            grade.fullMark,
+            grade.grade,
+            `${grade.percentage}%`
+          ]);
+        });
+
+        doc.autoTable({
+          head: [["Course", "Student Mark", "Full Mark", "Grade", "Percentage"]],
+          body: rows,
+          startY: 50
+        });
+
+        doc.text("Note: This document must be signed by your parent next Monday and taken to room C110.", 20, doc.autoTable.previous.finalY + 20);
+        doc.save("grade_report.pdf");
+      };
+
+      window.fakeEmail = function () {
+        alert("Opening Outlook to send an email to the admin...");
+        window.open("mailto:admin@school.edu?subject=Grade Inquiry&body=Hello, I have a question about my grades.");
+      };
+
+      window.askAI = function () {
+        const responseDiv = document.getElementById("chatResponse");
+        const replies = [
+          "Grades are updated every 15 seconds automatically.<br><span style='font-family: \"Courier New\", monospace; font-style: italic;'>If you have any objection, please go to your admin C210 or via email.</span>"
+        ];
+        const randomReply = replies[Math.floor(Math.random() * replies.length)];
+        responseDiv.innerHTML = `<strong>JessicaFomeya:</strong><br>${randomReply}`;
+      };
+
+      // Chatbot Toggle
+      const toggleBtn = document.getElementById("toggleChatbot");
+      const chatbotBox = document.getElementById("chatbot");
+
+      toggleBtn.addEventListener("click", () => {
+        const isVisible = chatbotBox.style.display === "block";
+        chatbotBox.style.display = isVisible ? "none" : "block";
+        toggleBtn.textContent = isVisible ? "💬 Chat" : "❌ Close";
+      });
+    });
+  </script>
+</body>
+</html>

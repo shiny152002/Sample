@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SYBMMJ ECU</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body,
+        html {
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+        }
+
+        nav {
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 60px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        nav h1 {
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+            position: relative;
+        }
+
+        nav ul li {
+            position: relative;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            left: 0;
+            background: rgba(0, 0, 0, 0.95);
+            border-radius: 10px;
+            padding: 10px 0;
+            min-width: 180px;
+        }
+
+        .dropdown a {
+            display: block;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        nav ul li:hover .dropdown {
+            display: block;
+        }
+
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 140px 20px 60px;
+        }
+
+        .hero-section h1 {
+            font-size: 54px;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .hero-pillars {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 40px;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .hero-pillars span {
+            padding: 0 15px;
+            border-right: 2px solid white;
+        }
+
+        .hero-pillars span:last-child {
+            border-right: none;
+        }
+
+        .hero-buttons {
+            margin-top: 30px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .hero-buttons button {
+            background: hsl(241, 90%, 67%);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s ease;
+        }
+
+        .hero-buttons button:hover {
+            background: #917bf7;
+        }
+
+        .section {
+            padding: 80px 60px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .section h2 {
+            font-size: 36px;
+            font-weight: 800;
+            color: rgb(189, 125, 214);
+            margin-bottom: 20px;
+        }
+
+        .section p {
+            font-size: 18px;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .dashboard-section {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            padding: 60px 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .dashboard-card {
+            background-color: #4f3ee6;
+            color: white;
+            width: 260px;
+            height: 140px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: scale(1.05);
+            background: #644fda;
+        }
+
+        .campus-details {
+            margin-top: 30px;
+            font-size: 18px;
+            line-height: 1.8;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stats-section {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            background: #001c48;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .stat-box {
+            flex: 1 1 200px;
+            margin: 20px;
+            color: white;
+        }
+
+        .stat-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .stat-box h2 {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-box p {
+            font-size: 18px;
+        }
+
+        .fees-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .fees-box {
+            background-color: rgba(255, 255, 255, 0.08);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .fees-box h3 {
+            color: #f0b6ff;
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+
+        .fees-box p {
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        #jessica-container {
+            position: fixed;
+            bottom: 100px;
+            left: 20px;
+            z-index: 10000;
+        }
+
+        #jessica-container button.toggle {
+            background: #4651ee;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #jessica-box {
+            display: none;
+            background: #222;
+            color: white;
+            width: 320px;
+            margin-top: 10px;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        #jessica-box input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        #jessica-box button.ask {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: #5868fc;
+            color: white;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        #jessica-reply {
+            margin-top: 15px;
+            font-style: italic;
+            color: #ffcfcf;
+            min-height: 40px;
+        }
+
+        .faq-buttons {
+            margin-top: 10px;
+        }
+
+        .faq-buttons button {
+            background-color: #444;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 5px;
+            transition: background 0.2s;
+        }
+
+        .faq-buttons button:hover {
+            background-color: #5868fc;
+        }
+
+        .subcategory {
+            margin-left: 10px;
+            display: none;
+        }
+
+        .subcategory button {
+            background-color: #333;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 36px;
+            }
+
+            .hero-pillars {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <video class="video-bg" autoplay muted loop playsinline>
+        <source src="https://cdn.pixabay.com/video/2015/09/27/846-140823862_small.mp4" type="video/mp4">
+    </video>
+    <div class="overlay"></div>
+
+    <!-- Navbar -->
+    <nav>
+        <h1>SYBMMJ ECU</h1>
+        <ul>
+            <li>
+                <a href="#">Academies</a>
+                <div class="dropdown">
+                    <a href="#">American System</a>
+                    <a href="#">British System</a>
+                    <a href="#">French System</a>
+                    <a href="#">National System</a>
+                </div>
+            </li>
+            <li><a href="#campuses">Campuses</a></li>
+            <li><a href="#fees-section">Fees</a></li>
+            <li><a href="mailto:contact@fake-sybmmj.edu">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1>Inspire Yourself Here</h1>
+        <div class="hero-pillars">
+            <span>BLENDED LEARNING</span>
+            <span>PATRIOTISM</span>
+            <span>EDTECH</span>
+            <span>GLOBAL CITIZENSHIP</span>
+        </div>
+        <div class="hero-buttons">
+            <button
+                onclick="document.getElementById('visit-info').scrollIntoView({ behavior: 'smooth' })">VISIT</button>
+            <button onclick="window.location.href='login.html'">APPLY</button>
+            <button onclick="document.getElementById('fees-section').scrollIntoView({ behavior: 'smooth' })">FEES &
+                PAYMENT</button>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats-section">
+        <div class="stat-box">
+            <div class="stat-icon">🏫</div>
+            <h2>2</h2>
+            <p>Campuses</p>
+        </div>
+        <div class="stat-box">
+            <div class="stat-icon">👥</div>
+            <h2>5,000+</h2>
+            <p>Employees</p>
+        </div>
+        <div class="stat-box">
+            <div class="stat-icon">🎓</div>
+            <h2>13,500</h2>
+            <p>Students</p>
+        </div>
+        <div class="stat-box">
+            <div class="stat-icon">👨‍👩‍👧‍👦</div>
+            <h2>24,000</h2>
+            <p>Parents</p>
+        </div>
+    </div>
+
+    <!-- Visit Info -->
+    <div class="section" id="visit-info">
+        <h2>SYBMMJ Schools</h2>
+        <p>SYBMMJ Schools is a private institution offering the American, British, and National (English + French)
+            Diplomas...</p>
+    </div>
+
+    <!-- Campuses -->
+    <div class="section" id="campuses">
+        <h2>Our Campuses</h2>
+        <div class="campus-details">
+            <p><strong>Fifth Settlement:</strong> Tagammoaa El-Awwal, Extension of Zaker Hussein St., Beside the Police
+                Academy – Cairo.</p>
+            <p><strong>Nasr City:</strong> Mostafa El-Nahhas.</p>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard-section">
+        <div class="dashboard-card" onclick="redirectToLogin('admin')">Admins</div>
+        <div class="dashboard-card" onclick="redirectToLogin('teacher')">Teachers</div>
+        <div class="dashboard-card" onclick="redirectToLogin('student')">Students</div>
+    </div>
+
+    <!-- Academic Calendar -->
+    <div class="section" id="calendar">
+        <h2>Academic Calendar</h2>
+        <p>You can download the official SYBMMJ Academic Calendar for 2024–2025 below.</p>
+        <a href="https://drive.google.com/file/d/1brJAidK3z5atN-6ZZVQUEt8yyIoBRq3F/view?usp=drive_link" download
+            class="hero-buttons">
+            <button>Download Calendar (PDF)</button>
+        </a>
+    </div>
+
+    <!-- Fees Section -->
+    <div class="section" id="fees-section">
+        <h2>Fees & Payment Methods</h2>
+        <div class="fees-container">
+            <div class="fees-box">
+                <h3>Registration from Egypt - Payment in EGP</h3>
+                <p>Account Name: Oasis for Educational Services<br>
+                    Bank Name: Arab Bank<br>
+                    Branch: New Maadi Branch<br>
+                    Address: 4/5 Block 29 El Laselky St., New Maadi - Cairo<br>
+                    Swift: ARABEGCXXXX<br>
+                    Account No: 5022-112910-439<br>
+                    IBAN: EG590044502200005022112910439</p>
+            </div>
+            <div class="fees-box">
+                <h3>Registration from Abroad - Payment in Euros</h3>
+                <p>Account Name: Oasis for Educational Services<br>
+                    Bank Name: Arab Bank<br>
+                    Branch: New Maadi Branch<br>
+                    Address: 4/5 Block 29 El Laselky St., New Maadi - Cairo<br>
+                    Swift: ARABEGCXXXX<br>
+                    Account No: 5022-112910-431<br>
+                    IBAN: EG810044502200005022112910431</p>
+            </div>
+            <div class="fees-box">
+                <h3>Registration from Abroad - Payment in USD</h3>
+                <p>Account Name: Oasis for Educational Services<br>
+                    Bank Name: Arab Bank<br>
+                    Branch: New Maadi Branch<br>
+                    Address: 4/5 Block 29 El Laselky St., New Maadi - Cairo<br>
+                    Swift: ARABEGCXXXX<br>
+                    Account No: 5022-112910-430<br>
+                    IBAN: EG110044502200005022112910430</p>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 SYBMMJ ECU. All rights reserved.</p>
+    </footer>
+
+    <!-- Jessica Chat -->
+    <div id="jessica-container">
+        <button class="toggle" onclick="toggleJessica()">Ask JessicaFomeya</button>
+        <div id="jessica-box">
+            <strong>Select a question:</strong>
+            <div class="faq-buttons">
+                <button onclick="toggleSub('fees-sub')">Fees</button>
+                <div id="fees-sub" class="subcategory">
+                    <button onclick="autoAnswer('fee-grade 1')">Grade 1 Fees</button>
+                    <button onclick="autoAnswer('fee-grade 2')">Grade 2 Fees</button>
+                    <button onclick="autoAnswer('fee-grade 3')">Grade 3 Fees</button>
+                    <button onclick="autoAnswer('fee-grade 4')">Grade 4 Fees</button>
+                    <button onclick="autoAnswer('fee-grade 5')">Grade 5 Fees</button>
+                    <button onclick="autoAnswer('fee-grade 6')">Grade 6 Fees</button>
+                    <button onclick="autoAnswer('fee-grade 7')">Grade 7 Fees</button>
+                    <button onclick="autoAnswer('fee-grade 8')">Grade 8 Fees</button>
+                    <button onclick="autoAnswer('fee-grade 9')">Grade 9 Fees</button>
+                    <button onclick="autoAnswer('fee-grade10')">Grade 10 Fees</button>
+                    <button onclick="autoAnswer('fee-grade11')">Grade 11 Fees</button>
+                    <button onclick="autoAnswer('fee-grade12')">Grade 12 Fees</button>
+                </div>
+
+                <button onclick="toggleSub('reg-sub')">Registration</button>
+                <div id="reg-sub" class="subcategory">
+                    <button onclick="autoAnswer('register-date')">Registration Dates</button>
+                    <button onclick="autoAnswer('register-requirement')">Registration Requirements</button>
+                </div>
+
+                <button onclick="toggleSub('cal-sub')">Calendar</button>
+                <div id="cal-sub" class="subcategory">
+                    <button onclick="autoAnswer('calendar')">View Academic Calendar</button>
+                    <button onclick="autoAnswer('calendar-holiday')">Holiday Dates</button>
+                </div>
+            </div>
+
+            <input type="text" id="jessica-question" placeholder="Type your question..."
+                onkeydown="if(event.key==='Enter') handleQuestion()" />
+            <button class="ask" onclick="handleQuestion()">Ask</button>
+            <div id="jessica-reply"></div>
+        </div>
+    </div>
+
+    <script>
+        const faq = {
+            'fees': {
+                keywords: ['fee', 'fees', 'payment', 'cost', 'tuition'],
+                responses: {
+                    'grade 1': 'Grade 1 fees are 45,000 EGP per year.',
+                    'grade 2': 'Grade 2 fees are 47,000 EGP per year.',
+                    'grade 3': 'Grade 3 fees are 50,000 EGP per year.',
+                    'grade 4': 'Grade 4 fees are 46,500 EGP per year.',
+                    'grade 5': 'Grade 5 fees are 47,000 EGP per year.',
+                    'grade 6': 'Grade 6 fees are 47,500 EGP per year.',
+                    'grade 7': 'Grade 7 fees are 48,000 EGP per year.',
+                    'grade 8': 'Grade 8 fees are 48,500 EGP per year.',
+                    'grade 9': 'Grade 9 fees are 49,000 EGP per year.',
+                    'grade10': 'Grade 10 fees are 49,500 EGP per year.',
+                    'grade11': 'Grade 11 fees are 50,000 EGP per year.',
+                    'grade12': 'Grade 12 fees are 50,000 EGP per year.',
+                    'default': 'Tuition fees range from 45,000 to 50,000 EGP depending on grade level.'
+                }
+            },
+            'registration': {
+                keywords: ['register', 'registration', 'apply', 'enroll', 'application'],
+                responses: {
+                    'date': 'Registration is open from May 1st to June 15th.',
+                    'missed deadline': 'Applications are only accepted during the announced dates. Kindly check the admissions page regularly for any updates.',
+                    'requirement': 'You need your birth certificate, previous school records, and guardian ID.',
+                    'in-person': 'Presence of student is not needed at this stage. Either parent can submit the application form.',
+                    'documents': 'You will need a recent photo of the student, a copy of each parent’s national ID, and a copy of each parent’s university degree.',
+                    'default': 'Registration typically opens in May. Documents like birth certificate and guardian ID are required.'
+                }
+            },
+            'calendar': {
+                keywords: ['calendar', 'schedule', 'semester', 'dates', 'term'],
+                responses: {
+                    'holiday': 'Winter break is from Dec 20 to Jan 5. Summer break starts July 1.',
+                    'default': 'The academic calendar is available on the school website. It includes term dates and holidays.'
+                }
+            },
+            'login': {
+                keywords: ['login', 'dashboard', 'access', 'account', 'sign in'],
+                responses: {
+                    'page access': 'To access the login page, please visit the “Login” section in the top right corner of the website.',
+                    'dashboard': 'Once logged in, you will have access to your personal dashboard where you can view your child’s grades, attendance, and important notices.',
+                    'default': 'For access to the login page, please visit the website and click on the login link at the top right corner.'
+                }
+            },
+            'school hours': {
+                keywords: ['school hours', 'time', 'schedule'],
+                responses: {
+                    'kg': 'KGs have school hours from 8:30 AM to 1:30 PM.',
+                    'default': 'School hours are from 7:45 AM (arrival) to 2:45 PM for all grades, with the morning assembly starting at 8:00 AM.'
+                }
+            },
+            'curriculum': {
+                keywords: ['subjects', 'curriculum', 'education', 'studies'],
+                responses: {
+                    'egyptian curriculum': 'As mandated by the Egyptian Ministry of Education, students are required to study Arabic, Religion, and Arabic Social Studies as per the curriculum provided by the ministry.',
+                    'default': 'Our curriculum is a mix of international and local educational standards, including subjects from the Egyptian Ministry of Education.'
+                }
+            },
+            'communication': {
+                keywords: ['communication', 'contact', 'parents', 'teachers'],
+                responses: {
+                    'school website': 'The School Online Community website is the official way of communication among teachers, students, and parents. Students are granted access to the website as soon as they are accepted.',
+                    'default': 'For any communications, please use the School Online Community website for messages, notices, and updates.'
+                }
+            }
+        };
+
+        function toggleJessica() {
+            const box = document.getElementById('jessica-box');
+            box.style.display = box.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleSub(id) {
+            // Close all subcategories
+            const allSubs = document.querySelectorAll('.subcategory');
+            allSubs.forEach(sub => {
+                if (sub.id !== id) {
+                    sub.style.display = 'none';
+                }
+            });
+
+            // Toggle the clicked one
+            const element = document.getElementById(id);
+            const isVisible = (element.style.display === 'block');
+            element.style.display = isVisible ? 'none' : 'block';
+
+            // Clear reply when switching categories
+            document.getElementById('jessica-reply').innerText = '';
+        }
+
+
+        function autoAnswer(key) {
+            handleSmartQuestion(key);
+        }
+
+        function handleQuestion() {
+            const input = document.getElementById('jessica-question').value.toLowerCase();
+            handleSmartQuestion(input);
+        }
+
+        function handleSmartQuestion(input) {
+            let foundCategory = null;
+            let foundTopic = null;
+            let reply = "I'm sorry, I couldn't find an answer for that.";
+
+            for (let category in faq) {
+                const keywords = faq[category].keywords;
+                if (keywords.some(word => input.includes(word))) {
+                    foundCategory = category;
+
+                    const subtopics = faq[category].responses;
+                    for (let topic in subtopics) {
+                        if (topic === 'default') continue;
+                        if (input.includes(topic)) {
+                            foundTopic = topic;
+                            break;
+                        }
+                    }
+
+                    reply = foundTopic ? subtopics[foundTopic] : subtopics['default'];
+                    break;
+                }
+            }
+
+            document.getElementById('jessica-reply').innerText = reply;
+        }
+
+        function redirectToLogin(role) {
+            localStorage.setItem("selectedRole", role);
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+
+</html>

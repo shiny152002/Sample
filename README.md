@@ -1,22 +1,32 @@
-# Vehicle Movement on a Map
+# 🎓 School System with AI Assistant
 
-## Overview
+A web-based School Management System designed for **Admins**, **Teachers**, and **Students**. The platform includes dashboards to manage records, track attendance, post announcements, and view grades. An integrated AI chatbot helps answer school-related questions like fees, schedules, and more.
 
-This project is a web application that visualizes a vehicle moving along a route on a map in real-time. Built with React and the Leaflet library, the application displays the vehicle's current location, tracks its path, and updates the route as it progresses.
+---
 
-![Screenshot (250)](https://github.com/user-attachments/assets/48241906-9168-4cd1-a4df-cbc0f332330e)
+## 🚀 Features
 
+### 👨‍💼 Admin:
+- Manage student and teacher accounts
+- Post school-wide announcements
+- Monitor attendance and grades
 
-## Features
+### 👩‍🏫 Teacher:
+- Take student attendance
+- Enter and edit student grades
+- Share updates and notes
 
-- **Interactive Map:** Utilizes Leaflet to render a dynamic and interactive map.
-- **Vehicle Tracking:** Displays a custom vehicle icon that updates to show the vehicle’s position.
-- **Real-Time Movement:** Simulates real-time movement with position updates every few seconds.
-- **Path Visualization:** Draws a polyline to represent the vehicle’s route from start to destination.
+### 👨‍🎓 Student:
+- View personal grades and attendance
+- Access school announcements
 
-## Technologies
+### 🤖 AI Assistant:
+- Answer questions about:
+  - School fees
+  - Class schedules
+  - Important dates and policies
 
-- **React:** For building the user interface and managing state.
-- **Leaflet:** For rendering the map and handling map-related functionalities.
-- **OpenStreetMap:** Provides the base map tiles.
+---
+
+## 📂 Project Structure
 

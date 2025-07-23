@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher Grades Management</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: rgba(78, 84, 200, 0.9);
+            color: white;
+            padding: 20px;
+            box-shadow: 3px 0 12px rgba(0, 0, 0, 0.3);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+            z-index: 10;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            flex-grow: 1;
+        }
+
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background: rgba(143, 148, 251, 0.6);
+            box-shadow: 0 0 15px rgba(143, 148, 251, 0.9);
+            transform: scale(1.08);
+            /* slightly larger on hover */
+        }
+
+
+        .main-content {
+            margin-left: 270px;
+            padding: 30px;
+            flex: 1;
+            overflow-y: auto;
+            width: calc(100% - 270px);
+        }
+
+        section {
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            color: #4e54c8;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-row>div {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        input:focus {
+            border-color: #4e54c8;
+            box-shadow: 0 0 8px rgba(78, 84, 200, 0.5);
+            outline: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #4e54c8;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .button-row {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .course-button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        button {
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(to right, #8f94fb, #4e54c8);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(78, 84, 200, 0.3);
+        }
+
+        .course-button {
+            padding: 8px 15px;
+            background: rgba(143, 148, 251, 0.3);
+            color: #4e54c8;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .course-button:hover {
+            background: #4e54c8;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .logout-button.clear {
+            background: linear-gradient(to right, #f44336, #d32f2f);
+        }
+
+        .action-btn {
+            margin-right: 5px;
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        .edit-btn {
+            background: #ffc107;
+            color: black;
+        }
+
+        .delete-btn {
+            background: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <ul>
+            <li><a href="#management" class="active">Grade Management</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <section>
+            <h2>Manage Student Grades</h2>
+
+            <div class="form-row">
+                <div><input type="text" id="gradeStudentName" placeholder="Student Name"></div>
+                <div><input type="text" id="gradeStudentId" placeholder="Student ID"></div>
+                <div><input type="text" id="courseName" placeholder="Course Name"></div>
+                <div><input type="number" id="studentMark" placeholder="Student Mark"></div>
+                <div><input type="number" id="fullMark" placeholder="Full Mark"></div>
+            </div>
+
+            <div class="course-button-row">
+                <button type="button" class="course-button" onclick="setCourse('Science')">Science</button>
+                <button type="button" class="course-button" onclick="setCourse('English Language')">English Language</button>
+                <button type="button" class="course-button" onclick="setCourse('Arabic Language')">Arabic Language</button>
+                <button type="button" class="course-button" onclick="setCourse('Social Studies')">Social Studies</button>
+                <button type="button" class="course-button" onclick="setCourse('Physics')">Physics</button>
+                <button type="button" class="course-button" onclick="setCourse('Chemistry')">Chemistry</button>
+                <button type="button" class="course-button" onclick="setCourse('Biology')">Biology</button>
+                <button type="button" class="course-button" onclick="setCourse('History')">History</button>
+                <button type="button" class="course-button" onclick="setCourse('Geography')">Geography</button>
+                <button type="button" class="course-button" onclick="setCourse('Maths')">Maths</button>
+                <button type="button" class="course-button" onclick="setCourse('Arts')">Arts</button>
+                <button type="button" class="course-button" onclick="setCourse('French')">French</button>
+                <button type="button" class="course-button" onclick="setCourse('German')">German</button>
+                <button type="button" class="course-button" onclick="setCourse('Algebra')">Algebra</button>
+                <button type="button" class="course-button" onclick="setCourse('Geometry')">Geometry</button>
+                <button type="button" class="course-button" onclick="setCourse('Calculus')">Calculus</button>
+                <button type="button" class="course-button" onclick="setCourse('Economics')">Economics</button>
+                <button type="button" class="course-button" onclick="setCourse('Christian Religion')">Christian Religion</button>
+                <button type="button" class="course-button" onclick="setCourse('Islamic Religion')">Islamic Religion</button>
+                <button type="button" class="course-button" onclick="setCourse('Music')">Music</button>
+                <button type="button" class="course-button" onclick="setCourse('Philosophy')">Philosophy</button>
+            </div>
+
+            <div class="button-row">
+                <button type="button" onclick="saveGrade()">Save Grade</button>
+                <button type="button" onclick="clearGrades()" class="logout-button clear">Clear All Grades</button>
+            </div>
+
+            <h3>Grades Records</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Student ID</th>
+                        <th>Course</th>
+                        <th>Student Mark</th>
+                        <th>Full Mark</th>
+                        <th>Grade</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="gradesTableBody"></tbody>
+            </table>
+        </section>
+    </div>
+
+    <script>
+        const GRADE_STORAGE_KEY = 'schoolGradeSystem_v2';
+
+        function setCourse(course) {
+            document.getElementById('courseName').value = course;
+        }
+
+        function calculateGrade(studentMark, fullMark) {
+            const percentage = (studentMark / fullMark) * 100;
+            if (percentage >= 90) return 'A';
+            if (percentage >= 80) return 'B';
+            if (percentage >= 70) return 'C';
+            if (percentage >= 60) return 'D';
+            return 'F';
+        }
+
+        function saveGrade() {
+            const studentName = document.getElementById('gradeStudentName').value;
+            const studentId = document.getElementById('gradeStudentId').value;
+            const course = document.getElementById('courseName').value;
+            const studentMark = parseFloat(document.getElementById('studentMark').value);
+            const fullMark = parseFloat(document.getElementById('fullMark').value);
+
+            if (!studentName || !studentId || !course || isNaN(studentMark) || isNaN(fullMark)) {
+                alert('Please fill all fields with valid values');
+                return;
+            }
+
+            const grade = calculateGrade(studentMark, fullMark);
+            const percentage = ((studentMark / fullMark) * 100).toFixed(2);
+
+            let gradeSystem = JSON.parse(localStorage.getItem(GRADE_STORAGE_KEY)) || {
+                teacherView: {},
+                studentView: {}
+            };
+
+            if (!gradeSystem.teacherView[studentId]) {
+                gradeSystem.teacherView[studentId] = [];
+            }
+
+            const newGrade = {
+                name: studentName,
+                course: course,
+                studentMark: studentMark,
+                fullMark: fullMark,
+                grade: grade,
+                date: new Date().toISOString()
+            };
+
+            gradeSystem.teacherView[studentId].push(newGrade);
+
+            localStorage.setItem(GRADE_STORAGE_KEY, JSON.stringify(gradeSystem));
+            appendGradeToTable(studentId, newGrade);
+
+            // Clear inputs
+            ['gradeStudentName', 'gradeStudentId', 'courseName', 'studentMark', 'fullMark'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+
+            alert('Grade saved successfully!');
+        }
+
+        function appendGradeToTable(studentId, grade, index = null) {
+            const tableBody = document.getElementById('gradesTableBody');
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${grade.name}</td>
+                <td>${studentId}</td>
+                <td>${grade.course}</td>
+                <td>${grade.studentMark}</td>
+                <td>${grade.fullMark}</td>
+                <td>${grade.grade}</td>
+                <td>
+                    <button class="action-btn edit-btn" onclick="editGrade('${studentId}', ${index})">Edit</button>
+                    <button class="action-btn delete-btn" onclick="deleteGrade('${studentId}', ${index})">Delete</button>
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+        }
+
+        function loadGrades() {
+            const gradeSystem = JSON.parse(localStorage.getItem(GRADE_STORAGE_KEY)) || { teacherView: {} };
+            const tableBody = document.getElementById('gradesTableBody');
+            tableBody.innerHTML = '';
+
+            Object.entries(gradeSystem.teacherView).forEach(([studentId, grades]) => {
+                grades.forEach((grade, index) => {
+                    appendGradeToTable(studentId, grade, index);
+                });
+            });
+        }
+
+        function editGrade(studentId, index) {
+            if (!confirm("Are you sure you want to edit this grade?")) return;
+
+            const gradeSystem = JSON.parse(localStorage.getItem(GRADE_STORAGE_KEY));
+            const grade = gradeSystem.teacherView[studentId][index];
+
+            document.getElementById('gradeStudentName').value = grade.name;
+            document.getElementById('gradeStudentId').value = studentId;
+            document.getElementById('courseName').value = grade.course;
+            document.getElementById('studentMark').value = grade.studentMark;
+            document.getElementById('fullMark').value = grade.fullMark;
+
+            gradeSystem.teacherView[studentId].splice(index, 1);
+            localStorage.setItem(GRADE_STORAGE_KEY, JSON.stringify(gradeSystem));
+            loadGrades();
+
+            alert("Grade is ready to be edited. After editing, click 'Save Grade'.");
+        }
+
+        function deleteGrade(studentId, index) {
+            if (!confirm("Are you sure you want to delete this grade?")) return;
+
+            const gradeSystem = JSON.parse(localStorage.getItem(GRADE_STORAGE_KEY));
+            gradeSystem.teacherView[studentId].splice(index, 1);
+            localStorage.setItem(GRADE_STORAGE_KEY, JSON.stringify(gradeSystem));
+            loadGrades();
+
+            alert("Grade deleted successfully.");
+        }
+
+        function clearGrades() {
+            if (confirm("Are you sure you want to clear all grades?")) {
+                localStorage.removeItem(GRADE_STORAGE_KEY);
+                loadGrades();
+                alert("All grades cleared successfully.");
+            }
+        }
+
+        window.onload = loadGrades;
+    </script>
+</body>
+
+</html>

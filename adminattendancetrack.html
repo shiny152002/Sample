@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin - View All Attendance</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: rgba(78, 84, 200, 0.9);
+            color: white;
+            padding: 20px;
+            box-shadow: 3px 0 12px rgba(0, 0, 0, 0.3);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+            z-index: 10;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            flex-grow: 1;
+        }
+
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background: rgba(143, 148, 251, 0.6);
+            box-shadow: 0 0 15px rgba(143, 148, 251, 0.9);
+            transform: scale(1.05);
+        }
+
+        .main-content {
+            margin-left: 270px;
+            padding: 30px;
+            flex: 1;
+            overflow-y: auto;
+            width: calc(100% - 270px);
+        }
+
+        section {
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        h2 {
+            color: #4e54c8;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .filters {
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .filters input,
+        .filters select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 200px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .filters input:focus,
+        .filters select:focus {
+            border-color: #4e54c8;
+            box-shadow: 0 0 8px rgba(78, 84, 200, 0.5);
+            outline: none;
+        }
+
+        .filters button {
+            padding: 10px 20px;
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filters button:hover {
+            background: linear-gradient(to right, #8f94fb, #4e54c8);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(8, 9, 10, 0.5);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4e54c8;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+            transition: background 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <ul>
+            <li><a href="#" class="active">View Attendance</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <section>
+            <h2>Admin - Attendance Overview</h2>
+
+            <div class="filters">
+                <input type="text" id="filterName" placeholder="Filter by name">
+                <select id="filterGrade">
+                    <option value="">All Grades</option>
+                    <option value="1">Grade 1</option>
+                    <option value="2">Grade 2</option>
+                    <option value="3">Grade 3</option>
+                    <option value="4">Grade 4</option>
+                    <option value="5">Grade 5</option>
+                    <option value="6">Grade 6</option>
+                    <option value="7">Grade 7</option>
+                    <option value="8">Grade 8</option>
+                    <option value="9">Grade 9</option>
+                    <option value="10">Grade 10</option>
+                    <option value="11">Grade 11</option>
+                    <option value="12">Grade 12</option>
+                </select>
+                <input type="date" id="filterDate">
+                <button onclick="filterRecords()">Apply Filters</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Grade</th>
+                        <th>Subject</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTableBody"></tbody>
+            </table>
+        </section>
+    </div>
+
+    <script>
+        const tableBody = document.getElementById('adminTableBody');
+
+        function loadAttendance() {
+            const data = JSON.parse(localStorage.getItem('attendanceData')) || [];
+            return data;
+        }
+
+        function displayRecords(records) {
+            tableBody.innerHTML = '';
+            if (records.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5">No records found.</td></tr>';
+                return;
+            }
+
+            records.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${entry.name}</td>
+                    <td>${entry.grade}</td>
+                    <td>${entry.subject}</td>
+                    <td>${entry.date}</td>
+                    <td>${entry.status}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function filterRecords() {
+            const nameFilter = document.getElementById('filterName').value.toLowerCase();
+            const gradeFilter = document.getElementById('filterGrade').value;
+            const dateFilter = document.getElementById('filterDate').value;
+
+            const allRecords = loadAttendance();
+
+            const filtered = allRecords.filter(record => {
+                const nameMatch = !nameFilter || record.name.toLowerCase().includes(nameFilter);
+                const gradeMatch = !gradeFilter || record.grade.replace(/[^\d]/g, '') === gradeFilter;
+                const dateMatch = !dateFilter || record.date === dateFilter;
+                return nameMatch && gradeMatch && dateMatch;
+            });
+
+            displayRecords(filtered);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            displayRecords(loadAttendance());
+        });
+    </script>
+
+</body>
+
+</html>
