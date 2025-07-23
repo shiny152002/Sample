@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: rgba(78, 84, 200, 0.9);
+            color: white;
+            padding: 15px;
+            box-shadow: 3px 0 12px rgba(0, 0, 0, 0.3);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+            z-index: 10;
+        }
+
+        .teacher-panel {
+            font-size: 28px;
+            color: rgb(255, 255, 255);
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-shadow: 0 0 12px rgba(128, 128, 128, 0.8);
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            flex-grow: 1;
+        }
+
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background: rgba(143, 148, 251, 0.6);
+            box-shadow: 0 0 15px rgba(143, 148, 251, 0.9);
+            transform: scale(1.05);
+        }
+
+        .main-content {
+            margin-left: 270px;
+            padding: 30px;
+            flex: 1;
+            overflow-y: auto;
+            width: calc(100% - 270px);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        section {
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        section.active-section {
+            box-shadow: 0 0 20px rgba(101, 180, 244, 0.8);
+            transform: translateY(-3px);
+        }
+
+        h2 {
+            color: #4e54c8;
+            font-weight: 700;
+        }
+
+        button {
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(to right, #8f94fb, #4e54c8);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(8, 9, 10, 0.5);
+        }
+
+        .welcome-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .welcome-details:hover {
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            transform: translateY(-3px);
+        }
+
+        .welcome-details p {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .logout-button {
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-button:hover {
+            background: linear-gradient(to right, #8f94fb, #4e54c8);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+        }
+
+        #student-search {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        #student-search h2 {
+            color: #4e54c8;
+            margin-bottom: 15px;
+        }
+
+        #studentIdInput {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: calc(100% - 140px);
+            margin-right: 10px;
+            font-size: 15px;
+        }
+
+        #studentInfoDisplay {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f4ff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            font-size: 15px;
+        }
+
+        /* Announcement styling */
+        .announcement-card {
+            background: #fff;
+            border-left: 6px solid #4e54c8;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+        }
+
+        .announcement-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .announcement-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4e54c8;
+            margin-bottom: 8px;
+        }
+
+        .announcement-text {
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: auto;
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+                z-index: 100;
+                overflow-y: auto;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 150px;
+                width: 100%;
+            }
+
+            .welcome-details {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .welcome-details p {
+                margin-bottom: 10px;
+            }
+
+            #studentIdInput {
+                width: calc(100% - 20px);
+                margin-bottom: 10px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .sidebar ul li a {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+
+            .teacher-panel {
+                font-size: 24px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            .announcement-title {
+                font-size: 16px;
+            }
+
+            .announcement-text {
+                font-size: 14px;
+            }
+        }
+    </style>
+    <script>
+        function searchStudent() {
+            const inputId = document.getElementById('studentIdInput').value.trim();
+            const studentDisplay = document.getElementById('studentInfoDisplay');
+
+            if (!inputId) {
+                studentDisplay.innerHTML = "<p style='color:red;'>Please enter a Student ID.</p>";
+                return;
+            }
+
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            const student = students.find(s => s.studentId === inputId);
+
+            if (!student) {
+                studentDisplay.innerHTML = "<p style='color:red;'>Student not found.</p>";
+                return;
+            }
+
+            const grades = JSON.parse(localStorage.getItem('grades')) || {};
+            const studentGrades = grades[inputId] || [];
+
+            let gradesHTML = 'No grades available';
+            let gradesFound = false;
+            if (studentGrades && studentGrades.length > 0) {
+                gradesHTML = '<h4 style="color:#4e54c8; margin-top: 10px;">Grades:</h4><ul>';
+                studentGrades.forEach(grade => {
+                    gradesHTML += `<li>${grade.course}: ${grade.mark}</li>`;
+                });
+                gradesHTML += '</ul>';
+                gradesFound = true;
+            }
+
+            let subjects = 'N/A';
+            if (Array.isArray(student.subjects)) {
+                subjects = student.subjects.join(', ');
+            } else if (typeof student.subjects === 'string') {
+                subjects = student.subjects;
+            }
+
+            studentDisplay.innerHTML = `
+    <div style="background:#fff;padding:15px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.1); color: black;">
+        <h3 style="color:#4e54c8;">Student Information</h3>
+        <p><strong>Name:</strong> ${student.name}</p>
+        <p><strong>ID:</strong> ${student.studentId}</p>
+        <p><strong>Email:</strong> ${student.email}</p>
+        <p><strong>Grade:</strong> ${student.grade || 'N/A'}</p>
+    </div>
+    `;
+        }
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const username = localStorage.getItem('loggedInUsername');
+            if (!username) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const teachers = JSON.parse(localStorage.getItem('teachers')) || [];
+            const teacher = teachers.find(t => t.username === username);
+            if (!teacher) {
+                alert('Teacher data not found');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('name').textContent = teacher.name;
+            document.getElementById('subject').textContent = teacher.subject;
+            document.getElementById('teacherId').textContent = teacher.teacherId;
+            document.getElementById('email').textContent = teacher.email;
+
+            // Load Teacher Announcements
+            const list = document.getElementById('announcementList');
+            const announcements = JSON.parse(localStorage.getItem('teacherAnnouncements')) || [];
+            if (announcements.length === 0) {
+                list.innerHTML = '<p style="color:gray;">No announcements yet.</p>';
+            } else {
+                announcements.forEach((text, i) => {
+                    const card = document.createElement('div');
+                    card.className = 'announcement-card';
+                    card.innerHTML = `
+                        <div class="announcement-title">Announcement ${i + 1}</div>
+                        <div class="announcement-text">${text}</div>
+                    `;
+                    list.appendChild(card);
+                });
+            }
+
+            // Set active section on sidebar
+            const sidebarLinks = document.querySelectorAll('.sidebar ul li a');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function () {
+                    sidebarLinks.forEach(a => a.classList.remove('active'));
+                    this.classList.add('active');
+                    const targetId = this.getAttribute('href').substring(1);
+                    document.querySelectorAll('section').forEach(section => section.classList.remove('active-section'));
+                    document.getElementById(targetId).classList.add('active-section');
+                });
+            });
+        });
+
+        function logout() {
+            localStorage.removeItem('loggedInUsername');
+            window.location.href = 'main.html';
+        }
+    </script>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="teacher-panel">Teacher Panel</div>
+        <h2>Teacher Dashboard</h2>
+        <ul>
+            <section id="student-search">
+                <h2>Search Student by ID</h2>
+                <input type="text" id="studentIdInput" placeholder="Enter ID">
+                <button onclick="searchStudent()">Search</button>
+                <div id="studentInfoDisplay" style="margin-top:20px;"></div>
+            </section>
+
+            <li><a href="#profile" class="active">My Profile</a></li>
+            <li><a href="#attendance">Mark Attendance</a></li>
+            <li><a href="#grades">Manage Grades</a></li>
+            <li><a href="#announcements">Announcements</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="welcome-details">
+            <p><strong>Welcome,</strong> <span id="name">Teacher</span></p>
+            <p><strong>Subject:</strong> <span id="subject"></span></p>
+            <p><strong>Teacher ID:</strong> <span id="teacherId"></span></p>
+            <p><strong>Email:</strong> <span id="email"></span></p>
+            <button class="logout-button" onclick="logout()">Logout</button>
+        </div>
+
+        <section id="profile" class="active-section">
+            <h2>My Profile</h2>
+            <p>Welcome, Teacher! Here you can view and update your profile information.</p>
+        </section>
+
+
+        <section id="attendance">
+            <h2>Mark Attendance</h2>
+            <p>Record attendance for your classes.</p>
+            <button onclick="location.href='teacherattendancetrack.html'">Enter Attendance</button>
+        </section>
+
+        <section id="grades">
+            <h2>Manage Grades</h2>
+            <p>Update student grades for your courses.</p>
+            <button onclick="location.href='teachergrade.html'">Enter Grades</button>
+        </section>
+
+        <section id="announcements">
+            <h2>Announcements</h2>
+            <div id="announcementList"></div>
+        </section>
+    </div>
+</body>
+
+</html>

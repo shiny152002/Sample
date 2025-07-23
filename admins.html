@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: rgba(78, 84, 200, 0.9);
+            color: white;
+            padding: 15px;
+            box-shadow: 3px 0 12px rgba(0, 0, 0, 0.3);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+            z-index: 10;
+        }
+
+        .admin-panel {
+            font-size: 28px;
+            color: rgb(255, 255, 255);
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-shadow: 0 0 12px rgba(128, 128, 128, 0.8);
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            flex-grow: 1;
+        }
+
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background: rgba(143, 148, 251, 0.6);
+            box-shadow: 0 0 15px rgba(143, 148, 251, 0.9);
+            transform: scale(1.05);
+        }
+
+        .main-content {
+            margin-left: 270px;
+            padding: 30px;
+            flex: 1;
+            overflow-y: auto;
+            width: calc(100% - 270px);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        section {
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        section.active-section {
+            box-shadow: 0 0 20px rgba(101, 180, 244, 0.8);
+            transform: translateY(-3px);
+        }
+
+        h2 {
+            color: #4e54c8;
+            font-weight: 700;
+        }
+
+        button {
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(to right, #8f94fb, #4e54c8);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(8, 9, 10, 0.5);
+        }
+
+        .welcome-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .welcome-details:hover {
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            transform: translateY(-3px);
+        }
+
+        .welcome-details p {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .logout-button {
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-button:hover {
+            background: linear-gradient(to right, #8f94fb, #4e54c8);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+        }
+
+        #announcementText {
+            width: 40%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: none;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease, background 0.3s ease;
+            outline: none;
+            margin-top: 10px;
+        }
+
+        #announcementText:focus {
+            background: #ffffff;
+            box-shadow: 0 0 12px rgba(143, 148, 251, 0.7);
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let links = document.querySelectorAll(".sidebar ul li a");
+
+            links.forEach(link => {
+                link.addEventListener("click", function () {
+                    links.forEach(l => l.classList.remove("active"));
+                    this.classList.add("active");
+
+                    document.querySelectorAll("section").forEach(section => {
+                        section.classList.remove("active-section");
+                    });
+
+                    const targetSection = document.querySelector(this.getAttribute("href"));
+                    if (targetSection) {
+                        targetSection.classList.add("active-section");
+                    }
+                });
+            });
+
+            // Listen for audience change
+            const audienceRadios = document.querySelectorAll('input[name="audience"]');
+            audienceRadios.forEach(radio => {
+                radio.addEventListener("change", loadAnnouncements);
+            });
+
+            loadAnnouncements();
+        });
+
+
+        ////// ANNOUNCEMENTS //////
+
+        function postAnnouncement() {
+            const text = document.getElementById('announcementText').value.trim();
+            const audience = document.querySelector('input[name="audience"]:checked').value;
+
+            if (text === "") {
+                alert("Please enter an announcement!");
+                return;
+            }
+
+            const storageKey = audience + 'Announcements';
+            let announcements = JSON.parse(localStorage.getItem(storageKey)) || [];
+            announcements.push(text);
+            localStorage.setItem(storageKey, JSON.stringify(announcements));
+
+            document.getElementById('announcementText').value = "";
+            loadAnnouncements();
+            alert("Announcement posted for " + audience + "s!");
+        }
+
+        function deleteAnnouncements() {
+            const audience = document.querySelector('input[name="audience"]:checked').value;
+            const storageKey = audience + 'Announcements';
+
+            if (confirm("Are you sure you want to delete all announcements for " + audience + "s?")) {
+                localStorage.removeItem(storageKey);
+                loadAnnouncements();
+                alert("All " + audience + " announcements deleted!");
+            }
+        }
+
+        function loadAnnouncements() {
+            const audience = document.querySelector('input[name="audience"]:checked')?.value || "teacher";
+            const storageKey = audience + 'Announcements';
+            const announcementList = document.getElementById('announcementList');
+            if (!announcementList) return;
+
+            announcementList.innerHTML = "";
+
+            let announcements = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            if (announcements.length === 0) {
+                announcementList.innerHTML = "<p style='color: gray;'>No announcements yet.</p>";
+                return;
+            }
+
+            announcements.forEach((announcement, index) => {
+                const div = document.createElement("div");
+                div.style.padding = "10px";
+                div.style.background = "rgba(143,148,251,0.2)";
+                div.style.marginBottom = "10px";
+                div.style.borderRadius = "8px";
+                div.style.display = "flex";
+                div.style.justifyContent = "space-between";
+                div.style.alignItems = "center";
+
+                const text = document.createElement("span");
+                text.textContent = (index + 1) + ". " + announcement;
+                text.style.flex = "1";
+
+                const btnGroup = document.createElement("div");
+                btnGroup.style.display = "flex";
+                btnGroup.style.gap = "10px";
+
+                const editBtn = document.createElement("button");
+                editBtn.textContent = "Edit";
+                editBtn.style.background = "#3498db";
+                editBtn.onclick = () => editAnnouncement(index, audience);
+
+                const deleteBtn = document.createElement("button");
+                deleteBtn.textContent = "Delete";
+                deleteBtn.style.background = "#e74c3c";
+                deleteBtn.onclick = () => deleteSingleAnnouncement(index, audience);
+
+                btnGroup.appendChild(editBtn);
+                btnGroup.appendChild(deleteBtn);
+                div.appendChild(text);
+                div.appendChild(btnGroup);
+
+                announcementList.appendChild(div);
+            });
+        }
+
+        function editAnnouncement(index, audience) {
+            const storageKey = audience + 'Announcements';
+            let announcements = JSON.parse(localStorage.getItem(storageKey)) || [];
+            const newText = prompt("Edit the announcement:", announcements[index]);
+            if (newText !== null && newText.trim() !== "") {
+                announcements[index] = newText.trim();
+                localStorage.setItem(storageKey, JSON.stringify(announcements));
+                loadAnnouncements();
+            }
+        }
+
+        function deleteSingleAnnouncement(index, audience) {
+            const storageKey = audience + 'Announcements';
+            let announcements = JSON.parse(localStorage.getItem(storageKey)) || [];
+            if (confirm("Delete this announcement?")) {
+                announcements.splice(index, 1);
+                localStorage.setItem(storageKey, JSON.stringify(announcements));
+                loadAnnouncements();
+            }
+        }
+
+
+        function logout() {
+            localStorage.removeItem('loggedInUsername');
+            window.location.href = 'main.html';
+        }
+    </script>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="admin-panel">Admin Panel</div>
+        <h2>Admin Panel</h2>
+        <ul>
+            <li><a href="#dashboard" class="active">Dashboard</a></li>
+            <li><a href="#students">Manage Students</a></li>
+            <li><a href="#teachers">Manage Teachers</a></li>
+            <li><a href="#courses">Manage Courses</a></li>
+            <li><a href="#attendance">Attendance Tracking</a></li>
+            <li><a href="#grades">Grade Management</a></li>
+
+            <li><a href="#announcements">Announcements</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="welcome-details">
+            <p><strong>Welcome,</strong> <span id="name">Admin.</span></p>
+            <p>Overview of the school system.</p>
+            <button class="logout-button" onclick="logout()">Logout</button>
+        </div>
+
+        <section id="students">
+            <h2>Manage Students</h2>
+            <button onclick="location.href='admmngstud.html'">Add Student</button>
+        </section>
+
+        <section id="teachers">
+            <h2>Manage Teachers</h2>
+            <button onclick="location.href='admmngteach.html'">Add Teacher</button>
+        </section>
+
+        <section id="courses">
+            <h2>Manage Courses</h2>
+            <button onclick="location.href='admnmngcourses.html'">Add Course</button>
+        </section>
+
+        <section id="attendance">
+            <h2>Attendance Tracking</h2>
+            <button onclick="location.href='adminattendancetrack.html'">Mark Attendance</button>
+        </section>
+
+        <section id="grades">
+            <h2>Grade Management</h2>
+            <button onclick="location.href='grade-management.html'">Mark Grades</button>
+        </section>
+
+        <section id="announcements">
+            <h2>Announcements</h2>
+            <input type="text" id="announcementText" placeholder="Enter announcement">
+            <div style="margin-top:10px;">
+                <label><input type="radio" name="audience" value="teacher" checked> Teachers</label>
+                <label style="margin-left:10px;"><input type="radio" name="audience" value="student"> Students</label>
+            </div>
+
+            <div style="margin-top:15px;">
+                <button onclick="postAnnouncement()">Post Announcement</button>
+                <button onclick="deleteAnnouncements()" style="background: #e74c3c; margin-left:10px;">Delete
+                    All</button>
+            </div>
+
+            <h3 style="margin-top:20px;">Current Announcements:</h3>
+            <div id="announcementList" style="margin-top:10px;"></div>
+        </section>
+
+    </div>
+</body>
+
+</html>

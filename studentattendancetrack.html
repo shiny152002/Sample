@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Attendance Viewer</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #4e54c8, #8f94fb);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      padding: 20px;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: rgba(78, 84, 200, 0.9);
+      color: white;
+      padding: 20px;
+      box-shadow: 3px 0 12px rgba(0, 0, 0, 0.3);
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      border-top-right-radius: 20px;
+      border-bottom-right-radius: 20px;
+      z-index: 10;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 30px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      flex-grow: 1;
+    }
+
+    .sidebar ul li {
+      margin: 10px 0;
+    }
+
+    .sidebar ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      display: block;
+      padding: 10px 15px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar ul li a:hover,
+    .sidebar ul li a.active {
+      background: rgba(143, 148, 251, 0.6);
+      box-shadow: 0 0 15px rgba(143, 148, 251, 0.9);
+      transform: scale(1.05);
+    }
+
+    .main-content {
+      margin-left: 270px;
+      padding: 30px;
+      flex: 1;
+      overflow-y: auto;
+      width: calc(100% - 270px);
+    }
+
+    section {
+      padding: 25px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    h2,
+    h3 {
+      color: #4e54c8;
+      font-weight: 700;
+    }
+
+    form {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    input {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    input:focus {
+      border-color: #4e54c8;
+      box-shadow: 0 0 8px rgba(78, 84, 200, 0.5);
+      outline: none;
+    }
+
+    button {
+      background: linear-gradient(to right, #4e54c8, #8f94fb);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #8f94fb, #4e54c8);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(8, 9, 10, 0.5);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background: #4e54c8;
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    tr:hover {
+      background: #f9f9f9;
+    }
+
+    td {
+      background: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sidebar">
+    <h2>Student Panel</h2>
+    <ul>
+      <li><a href="#management" class="active">View Attendance</a></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <section>
+      <h2>View Your Attendance</h2>
+      <form id="studentForm">
+        <input type="text" id="studentName" placeholder="Enter your name" required />
+        <button type="submit">View Attendance</button>
+      </form>
+
+      <h3>Attendance Records</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            <th>Subject</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="studentTableBody"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <script>
+    // On page load, populate the input field with saved student data
+    document.addEventListener('DOMContentLoaded', () => {
+      const studentData = JSON.parse(localStorage.getItem('studentData')) || {};
+      const studentNameField = document.getElementById('studentName');
+
+      if (studentData.name) {
+        studentNameField.value = studentData.name;
+        studentNameField.setAttribute('readonly', true);
+      }
+    });
+
+    const form = document.getElementById('studentForm');
+    const tableBody = document.getElementById('studentTableBody');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('studentName').value.trim().toLowerCase();
+      const allData = JSON.parse(localStorage.getItem('attendanceData')) || [];
+      const filteredData = allData.filter(entry => entry.name.toLowerCase() === name);
+
+      tableBody.innerHTML = '';
+      if (filteredData.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="4">No attendance records found.</td></tr>';
+      } else {
+        filteredData.forEach(entry => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+          <td>${entry.name}</td>
+          <td>${entry.subject}</td>
+          <td>${entry.date}</td>
+          <td>${entry.status}</td>`;
+          tableBody.appendChild(row);
+        });
+      }
+    });
+  </script>
+
+</body>
+
+</html>
